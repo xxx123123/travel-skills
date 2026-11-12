@@ -21,4 +21,6 @@ description: 将已规划的旅行行程导出为可导入 Apple 日历、Outloo
 
        python scripts/build_ics.py itinerary.json travel.ics
 
+   如果 `trip-planner` 交接了已确认的文件和 SHA-256，直接用原文件并加 `--expect-sha256 <已确认指纹>`。校验失败时不要重算指纹或改用无指纹命令绕过；回到总规划，展示当前版本并重新确认。单独导出用户已确认的现成行程时，仍可使用上面的命令。
+
 3. 交付可下载的 .ics，报告日程数量、提醒数量、时区和关键时刻。核对至少一个航班或预约时间；跨年核对年份。按用户设备和收件方式提供 [导入说明](references/import.md)。只有实际验证后才说手机已导入。

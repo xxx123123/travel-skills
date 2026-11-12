@@ -1,6 +1,7 @@
 """Build a travel calendar from UTF-8 JSON. Python 3.10+, standard library only."""
 import argparse
 from datetime import date, datetime, timezone
+from hashlib import sha256
 import json
 from pathlib import Path
 import re
@@ -109,11 +110,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--expect-sha256", help="require the exact input snapshot confirmed by the traveler")
     args = parser.parse_args()
     if args.output.suffix.lower() != ".ics" or args.input.resolve() == args.output.resolve():
         parser.error("output must be a separate .ics file")
     try:
-        spec = json.loads(args.input.read_text(encoding="utf-8-sig"))
+        raw = args.input.read_bytes()
+        if args.expect_sha256 is not None and sha256(raw).hexdigest() != args.expect_sha256:
+            raise ValueError("input differs from the confirmed itinerary; show and confirm the current version first")
+        spec = json.loads(raw.decode("utf-8-sig"))
         content, events, alarms = build(spec)
         args.output.write_bytes(content)
     except (ValueError, OSError, OverflowError) as error:

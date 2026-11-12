@@ -8,6 +8,8 @@
 
 收到方案后，可以回复「把返程改成中午，早市挪到前一天」继续调整。满意后回复 **「按这版生成日历」**。初次要求生成日历，不等于确认还没看到的行程；改过的版本会重新展示，等确认后才导出。
 
+有具体时间表时，`trip-planner` 会检查活动重叠、交通缓冲、最后入场和硬预算。待核实的车程、库存或费用会单列。日历从用户确认的同一份行程生成。
+
 周末自驾也用同一个入口：「用 trip-planner，从苏州通安出发，带 3 岁孩子，找单程 60 分钟内能看动物的地方。」已经决定去哪里，就说：「从通安自驾去无锡动物园，帮我安排停车、入园和半天游览路线。」
 
 ## 技能列表
@@ -44,10 +46,11 @@ git clone https://github.com/xxx123123/travel-skills.git
 
 ```sh
 python flight-lowprice/scripts/lowprice.py --from WUX --dates 2026-12-30 --region 东北 --max-price 800 --group-by-region --json
+python trip-planner/scripts/check_itinerary.py itinerary.json
 python travel-to-ics/scripts/build_ics.py itinerary.json travel.ics
 ```
 
-`--max-price 800` 含 ¥800；严格低于 ¥800 用 `--under-price 800`。日历输入 JSON 示例见 [travel-to-ics](travel-to-ics/SKILL.md)。
+`--max-price 800` 含 ¥800；严格低于 ¥800 用 `--under-price 800`。校验输入和结果见 [行程校验与快照](trip-planner/references/itinerary.md)；只导出已确认的现成行程可用 [日历基础 JSON](travel-to-ics/SKILL.md)。
 
 ## 导入日历
 
@@ -56,5 +59,5 @@ python travel-to-ics/scripts/build_ics.py itinerary.json travel.ics
 ## 价格与预订
 
 - 机票日历价用于筛选，具体机场、班次、税费、行李和退改以购票页为准。
-- 酒店房券要核对目标日期的库存、加价及退款规则；显示促销价不代表那一晚有房。
+- 酒店按目标日期的含税实付比预算，早餐、门票等权益另计。房券库存未核实只列为候选线索。
 - 技能提供规划、比价和导出，不代下单。`.ics` 需要用户自行导入，导入后建议核对一个关键时刻和提醒。
